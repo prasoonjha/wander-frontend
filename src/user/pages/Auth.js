@@ -67,8 +67,6 @@ const Auth = () => {
   const authSubmitHandler = async (event) => {
     event.preventDefault();
 
-    console.log(formState.inputs);
-
     if (isLoginMode) {
       try {
         const responseData = await sendRequest(
@@ -82,14 +80,13 @@ const Auth = () => {
             "Content-Type": "application/json",
           }
         );
-
-        auth.login(responseData.user.id);
+        auth.login(responseData.userId, responseData.token);
       } catch (err) {}
     } else {
       try {
         const formData = new FormData();
-        formData.append("name", formState.inputs.name.value);
         formData.append("email", formState.inputs.email.value);
+        formData.append("name", formState.inputs.name.value);
         formData.append("password", formState.inputs.password.value);
         formData.append("image", formState.inputs.image.value);
         const responseData = await sendRequest(
@@ -98,7 +95,7 @@ const Auth = () => {
           formData
         );
 
-        auth.login(responseData.user.id);
+        auth.login(responseData.userId, responseData.token);
       } catch (err) {}
     }
   };
@@ -124,10 +121,10 @@ const Auth = () => {
           )}
           {!isLoginMode && (
             <ImageUpload
-              id="image"
               center
+              id="image"
               onInput={inputHandler}
-              imageFor="Please add a display pic!"
+              errorText="Please provide an image."
             />
           )}
           <Input
@@ -139,7 +136,6 @@ const Auth = () => {
             errorText="Please enter a valid email address."
             onInput={inputHandler}
           />
-
           <Input
             element="input"
             id="password"
